@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#087ea4"><title>Ocean Animal Speller</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;overflow:hidden}body{background:linear-gradient(#43c9ee,#078dbb 55%,#045874);color:#fff}
+button{font:inherit;touch-action:manipulation}.screen{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}.hidden{display:none!important}
+h1{text-align:center;font-size:clamp(34px,7vw,66px);line-height:.95;text-shadow:0 5px #056080}.fish{font-size:clamp(80px,16vw,150px);animation:swim 2.4s ease-in-out infinite}@keyframes swim{50%{transform:translateX(18px) rotate(-3deg)}}
+.primary{background:#fff;color:#05749a;border:0;border-radius:24px;padding:17px 42px;font-size:clamp(22px,3vw,30px);font-weight:800;box-shadow:0 12px 30px #00384a55}
+.top{width:min(1100px,100%);display:flex;justify-content:space-between;font-weight:800;font-size:clamp(17px,2.6vw,25px);margin-bottom:12px}
+.card{width:min(1100px,100%);background:#fffffff0;color:#073b4c;border-radius:30px;padding:clamp(18px,3vw,34px);text-align:center;box-shadow:0 12px 30px #00384a55}
+.animal{width:clamp(150px,25vw,250px);height:clamp(150px,25vw,250px);margin:auto;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d8faff;font-size:clamp(90px,17vw,155px);animation:bob 1.5s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-7px) rotate(2deg)}}
+.prompt{font-size:clamp(20px,3vw,30px);font-weight:800;margin:10px}.word{font-size:clamp(30px,5vw,48px);letter-spacing:8px;font-weight:900;margin:15px;color:#075c78;min-height:55px}
+.keyboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:9px;max-width:900px;margin:auto}.key{border:0;border-radius:15px;background:#087fa6;color:#fff;font-weight:900;font-size:clamp(20px,3vw,29px);min-height:58px;box-shadow:0 5px #045c78}.key:active{transform:translateY(4px);box-shadow:0 1px #045c78}
+.msg{min-height:32px;font-size:20px;font-weight:900}.secondary{border:2px solid #087fa6;background:#fff;color:#087fa6;border-radius:16px;padding:10px 18px;font-weight:800;margin:8px}
+#celebrate{position:fixed;inset:0;background:#064b68aa;display:flex;align-items:center;justify-content:center}.pop{background:#fff;color:#075c78;border-radius:30px;padding:35px;text-align:center;width:min(600px,90%)}.pop .emoji{font-size:80px}
+@media(orientation:landscape) and (min-width:700px){.card{display:grid;grid-template-columns:280px 1fr;gap:10px 30px;align-items:center}.animalWrap{grid-row:1/7}.prompt,.word,.msg,.keyboard,.actions{grid-column:2}}
+.b{position:fixed;border:2px solid #ffffff55;background:#ffffff18;border-radius:50%;animation:float 5s ease-in-out infinite}.b1{width:35px;height:35px;left:8%;top:15%}.b2{width:18px;height:18px;right:12%;top:12%;animation-delay:1s}.b3{width:55px;height:55px;right:20%;bottom:12%;animation-delay:2s}@keyframes float{50%{transform:translateY(-24px)}}
+
+.voice-card{width:min(920px,94vw);margin:10px auto;padding:12px 16px;border-radius:20px;background:rgba(255,255,255,.88);box-shadow:0 8px 22px rgba(0,80,120,.15);display:flex;align-items:center;justify-content:space-between;gap:12px;color:#075477}
+.voice-card strong{font-size:18px}
+.small-note{font-size:13px;opacity:.75;margin-top:3px}
+.voice-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.voice-controls select,.voice-controls button{min-height:42px;border-radius:12px;border:2px solid #8fd7ec;background:white;padding:7px 10px;font-weight:700;color:#075477}
+@media(max-width:650px){.voice-card{flex-direction:column;align-items:stretch}.voice-controls{justify-content:stretch}.voice-controls select{flex:1}}
+</style></head>
+<body>
+<div class="b b1"></div><div class="b b2"></div><div class="b b3"></div>
+<section id="home" class="screen"><div class="fish">🐠</div><h1>OCEAN ANIMAL<br>SPELLER</h1><p style="font-size:22px">Can you spell the ocean animals?</p><button class="primary" onclick="start()">🌊 PLAY</button></section>
+<section id="game" class="screen hidden"><div class="top"><span>🌊 Ocean Animals</span><span id="progress"></span><span>⭐ <b id="stars">0</b></span></div>
+<div class="card"><div class="animalWrap"><div class="animal" id="animal"></div></div><div class="prompt">Spell this animal!</div><div class="word" id="word"></div><div class="msg" id="msg"></div><div class="keyboard" id="keyboard"></div><div class="actions"><button class="secondary" onclick="hear()">🔊 Hear it</button><button class="secondary" onclick="resetGame()">↻ Start again</button></div></div></section>
+<div id="celebrate" class="hidden"><div class="pop"><div class="emoji">🎉🐠⭐</div><h2>AMAZING!</h2><p id="correct" style="font-size:22px;font-weight:800"></p><button class="primary" onclick="nextAnimal()">NEXT ANIMAL ➜</button></div></div>
+<script>
+const animals=[["FISH","🐟"],["SEAL","🦭"],["CRAB","🦀"],["SHARK","🦈"],["WHALE","🐋"],["SQUID","🦑"],["CLOWNFISH","🐠"],["BLUE TANG","🐟"],["TURTLE","🐢"],["DOLPHIN","🐬"],["OCTOPUS","🐙"],["STARFISH","⭐"],["SEAHORSE","🌊"],["MANTA RAY","🌊"],["JELLYFISH","🪼"],["SEALION","🦭"],["STINGRAY","🌊"],["HAMMERHEAD","🦈"],["SWORDFISH","🐟"]];
+let i=0,ans="",stars=Number(localStorage.oceanStars||0);
+const $=x=>document.getElementById(x); const target=()=>animals[i][0].replaceAll(" ","");
+function speak(t){if("speechSynthesis"in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="en-AU";u.rate=.82;speechSynthesis.speak(u)}}
+function start(){$("home").classList.add("hidden");$("game").classList.remove("hidden");render();setTimeout(()=>speak("What ocean animal is this?"),300)}
+function render(){let [n,e]=animals[i];ans="";$("animal").textContent=e;$("progress").textContent=`${i+1} / ${animals.length}`;$("stars").textContent=stars;$("msg").textContent="";$("word").textContent=n.split("").map(c=>c===" "?"   ":"_").join(" ");let a=[...target()].sort(()=>Math.random()-.5);$("keyboard").innerHTML="";a.forEach(c=>{let b=document.createElement("button");b.className="key";b.textContent=c;b.onclick=()=>choose(c,b);$("keyboard").appendChild(b)})}
+function choose(c,b){let t=target();if(c===t[ans.length]){ans+=c;let p=0;$("word").innerHTML=animals[i][0].split("").map(x=>x===" "?"&nbsp;&nbsp;&nbsp;":ans[p++]||"_").join(" ");if(ans.length===t.length){stars++;localStorage.oceanStars=stars;$("stars").textContent=stars;$("correct").textContent=`You spelled ${animals[i][0]}!`;$("celebrate").classList.remove("hidden");speak(animals[i][0])}}else{$("msg").textContent="Try another letter! 💙";speak(c)}}
+function hear(){speak(animals[i][0])}function nextAnimal(){$("celebrate").classList.add("hidden");i=(i+1)%animals.length;render()}function resetGame(){i=0;stars=0;localStorage.removeItem("oceanStars");render()}
+</script>
+<script>
+window.addEventListener('load', () => {
+  const select = document.getElementById('voiceSelect');
+  const test = document.getElementById('testVoiceBtn');
+  if(select){
+    select.addEventListener('change', e => setVoice(e.target.value));
+  }
+  if(test){
+    test.addEventListener('click', () => speak('Hello! Let us spell some ocean animals.'));
+  }
+  refreshVoiceOptions();
+  if('speechSynthesis' in window){
+    speechSynthesis.onvoiceschanged = refreshVoiceOptions;
+  }
+});
+</script>
+</body></html>
